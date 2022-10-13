@@ -92,14 +92,19 @@ for k in range(0, datanumber):  # 樣本迴圈
     firstsum = sig(np.dot(weight_1, x_train[k, :].flatten()))
 
     Secondsum = sig(np.dot(weight_2, firstsum.flatten()))
-    output = sig(np.dot(weight_output, Secondsum.flatten()))  # 先算出初始output
+    thirdsum=sig(np.dot(weight_3, Secondsum.flatten()))
+    output = sig(np.dot(weight_output, thirdsum.flatten()))  # 先算出初始output
     print(output)
     theta_output = output_theta(output, y_train_matrix[k])
-    theta_hidden2 = hidden_theta(Secondsum, weight_output, theta_output).flatten()
+    theta_hidden3= hidden_theta(thirdsum, weight_output, theta_output).flatten()
+    theta_hidden2 = hidden_theta(Secondsum, weight_3, theta_hidden3).flatten()
     theta_hidden1 = hidden_theta(firstsum, weight_2, theta_hidden2).flatten()
 
-    delta_w_matrix_2to_output = delta_w_generator(
-        outputlayer, hiddenlayer_2, theta_output, Secondsum, lrate
+    delta_w_matrix_3to_output = delta_w_generator(
+        outputlayer, hiddenlayer_3, theta_output, thirdsum, lrate
+    )
+    delta_w_matrix_2to_3=delta_w_generator(
+        hiddenlayer_3, hiddenlayer_2, theta_hidden3, Secondsum, lrate
     )
     delta_w_matrix_1to_2 = delta_w_generator(
         hiddenlayer_2, hiddenlayer_1, theta_hidden2, firstsum, lrate
@@ -107,7 +112,8 @@ for k in range(0, datanumber):  # 樣本迴圈
     delta_w_matrix_inputto_1 = delta_w_generator(
         hiddenlayer_1, inputlayer, theta_hidden1, x_train[k, :].flatten(), lrate
     )
-    weight_output = weight_output + delta_w_matrix_2to_output
+    weight_output = weight_output + delta_w_matrix_3to_output
+    weight_3=weight_3+delta_w_matrix_2to_3
     weight_1 = weight_1 + delta_w_matrix_inputto_1
     weight_2 = weight_2 + delta_w_matrix_1to_2
 
@@ -118,12 +124,13 @@ pred = np.zeros((testnumber, 1))
 MSE = 0
 
 
-def output_generator(weight1, weight2, weightoutput, data):
+def output_generator(weight1, weight2,weight3, weightoutput, data):
     # firstsum1= np.empty((1, hiddenlayer_1))
     firstsum1 = sig(np.dot(weight1, data))
     # print(firstsum1)
     Secondsum1 = sig(np.dot(weight2, firstsum1.flatten()))
-    output1 = sig(np.dot(weightoutput, Secondsum1.flatten()))
+    thirdsum1=sig(np.dot(weight3, Secondsum1.flatten()))
+    output1 = sig(np.dot(weightoutput, thirdsum1.flatten()))
     # print(output1)# 先算出初始output
     return output1
 
@@ -132,7 +139,7 @@ correct = 0
 for i in range(0, testnumber):
 
     expect_output = output_generator(
-        weight_1, weight_2, weight_output, x_test[i, :].flatten()
+        weight_1, weight_2,weight_3 ,weight_output, x_test[i, :].flatten()
     )
     result_matrix[i, ::] = expect_output
     pred[i] = np.argmax(expect_output)
