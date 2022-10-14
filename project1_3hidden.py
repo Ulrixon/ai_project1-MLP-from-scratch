@@ -40,8 +40,8 @@ def sig(x):
 import random
 
 inputlayer = 28 * 28
-hiddenlayer_1 = 100
-hiddenlayer_2 = 50
+hiddenlayer_1 = 150
+hiddenlayer_2 = 100
 hiddenlayer_3 = 20
 outputlayer = 10
 datanumber = 60000

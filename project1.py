@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pandas import array
 import sklearn
 import tensorflow as tf
-import pandas as pd
+import pandas as oypd
 
 #%% import data
 mnist = tf.keras.datasets.mnist
@@ -41,7 +41,7 @@ def sig(x):
 import random
 # learning rate
 lrate = 0.01 
-epochs = 1
+epochs = 2
 inputlayer = 28 * 28
 hiddenlayer_1 = 100
 hiddenlayer_2 = 50
@@ -88,7 +88,9 @@ def delta_w_generator(forelayer, nowlayer, theta_matrix, nowoutput, learate):
 
 
 for z in range(epochs):
-    for k in range(0, datanumber):  # 樣本迴圈
+    k_loop_para=list(range(0, datanumber))
+    random.shuffle(k_loop_para)
+    for k in k_loop_para:  # 樣本迴圈
         firstsum = np.empty((1, hiddenlayer_1))
         # for i in range(0,len(x_train)-1):
         firstsum = sig(np.dot(weight_1, x_train[k, :].flatten()))
