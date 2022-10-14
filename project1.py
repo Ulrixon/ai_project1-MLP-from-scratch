@@ -18,8 +18,7 @@ for i in range(0, len(y_train) - 1):
 y_test_matrix = np.zeros((len(y_test), 10))
 for i in range(0, len(y_test) - 1):
     y_test_matrix[i, y_test[i]] = 1
-#%% learning rate
-lrate = 0.01
+
 #%% example
 
 trainimg = x_train
@@ -31,6 +30,8 @@ for i in [0, 1, 2]:
     plt.imshow(np.reshape(trainimg[i, :] / 255, (28, 28)), interpolation="nearest")
     print(y_train[i])
     plt.show()
+
+
 #%% activition funtion
 def sig(x):
     return 1 / (1 + np.exp(-x))
@@ -38,7 +39,8 @@ def sig(x):
 
 #%% layer
 import random
-
+# learning rate
+lrate = 0.01 
 epochs = 1
 inputlayer = 28 * 28
 hiddenlayer_1 = 100
