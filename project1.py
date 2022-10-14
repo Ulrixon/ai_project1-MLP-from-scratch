@@ -39,8 +39,9 @@ def sig(x):
 #%% layer
 import random
 
+epochs = 1
 inputlayer = 28 * 28
-hiddenlayer_1 = 150
+hiddenlayer_1 = 100
 hiddenlayer_2 = 50
 outputlayer = 10
 datanumber = 60000
@@ -70,7 +71,7 @@ def hidden_theta(middleoutput, next_weight, theta_matrix):
     for i in range(0, len(middleoutput)):
         # for j in range(0,len(next_weight)):
         theta = np.dot(theta_matrix.flatten(), next_weight[:, i])
-        theta = middleoutput[i] * theta.flatten()
+        theta = middleoutput[i] * (1 - middleoutput[i]) * theta.flatten()
         final_theta_matrix[i] = theta
     return final_theta_matrix
 
@@ -84,30 +85,31 @@ def delta_w_generator(forelayer, nowlayer, theta_matrix, nowoutput, learate):
     return delta_w_matrix
 
 
-for k in range(0, datanumber):  # 樣本迴圈
-    firstsum = np.empty((1, hiddenlayer_1))
-    # for i in range(0,len(x_train)-1):
-    firstsum = sig(np.dot(weight_1, x_train[k, :].flatten()))
+for z in range(epochs):
+    for k in range(0, datanumber):  # 樣本迴圈
+        firstsum = np.empty((1, hiddenlayer_1))
+        # for i in range(0,len(x_train)-1):
+        firstsum = sig(np.dot(weight_1, x_train[k, :].flatten()))
 
-    Secondsum = sig(np.dot(weight_2, firstsum.flatten()))
-    output = sig(np.dot(weight_output, Secondsum.flatten()))  # 先算出初始output
-    print(output)
-    theta_output = output_theta(output, y_train_matrix[k])
-    theta_hidden2 = hidden_theta(Secondsum, weight_output, theta_output).flatten()
-    theta_hidden1 = hidden_theta(firstsum, weight_2, theta_hidden2).flatten()
+        Secondsum = sig(np.dot(weight_2, firstsum.flatten()))
+        output = sig(np.dot(weight_output, Secondsum.flatten()))  # 先算出初始output
+        print(output)
+        theta_output = output_theta(output, y_train_matrix[k])
+        theta_hidden2 = hidden_theta(Secondsum, weight_output, theta_output).flatten()
+        theta_hidden1 = hidden_theta(firstsum, weight_2, theta_hidden2).flatten()
 
-    delta_w_matrix_2to_output = delta_w_generator(
-        outputlayer, hiddenlayer_2, theta_output, Secondsum, lrate
-    )
-    delta_w_matrix_1to_2 = delta_w_generator(
-        hiddenlayer_2, hiddenlayer_1, theta_hidden2, firstsum, lrate
-    )
-    delta_w_matrix_inputto_1 = delta_w_generator(
-        hiddenlayer_1, inputlayer, theta_hidden1, x_train[k, :].flatten(), lrate
-    )
-    weight_output = weight_output + delta_w_matrix_2to_output
-    weight_1 = weight_1 + delta_w_matrix_inputto_1
-    weight_2 = weight_2 + delta_w_matrix_1to_2
+        delta_w_matrix_2to_output = delta_w_generator(
+            outputlayer, hiddenlayer_2, theta_output, Secondsum, lrate
+        )
+        delta_w_matrix_1to_2 = delta_w_generator(
+            hiddenlayer_2, hiddenlayer_1, theta_hidden2, firstsum, lrate
+        )
+        delta_w_matrix_inputto_1 = delta_w_generator(
+            hiddenlayer_1, inputlayer, theta_hidden1, x_train[k, :].flatten(), lrate
+        )
+        weight_output = weight_output + delta_w_matrix_2to_output
+        weight_1 = weight_1 + delta_w_matrix_inputto_1
+        weight_2 = weight_2 + delta_w_matrix_1to_2
 
 #%% expect
 testnumber = 10000
