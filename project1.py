@@ -39,14 +39,16 @@ def sig(x):
 
 #%% layer
 import random
+
 # learning rate
-lrate = 0.01 
+lrate = 0.01
 epochs = 2
 inputlayer = 28 * 28
-hiddenlayer_1 = 100
-hiddenlayer_2 = 50
+hiddenlayer_1 = 150
+hiddenlayer_2 = 100
 outputlayer = 10
 datanumber = 60000
+testnumber = 10000
 # weight_1=np.empty((hiddenlayer_1,784))
 
 
@@ -87,8 +89,19 @@ def delta_w_generator(forelayer, nowlayer, theta_matrix, nowoutput, learate):
     return delta_w_matrix
 
 
+def output_generator(weight1, weight2, weightoutput, data):
+    # firstsum1= np.empty((1, hiddenlayer_1))
+    firstsum1 = sig(np.dot(weight1, data))
+    # print(firstsum1)
+    Secondsum1 = sig(np.dot(weight2, firstsum1.flatten()))
+    output1 = sig(np.dot(weightoutput, Secondsum1.flatten()))
+    # print(output1)# 先算出初始output
+    return output1
+
+
+correct_matrix = np.zeros((epochs, 1))
 for z in range(epochs):
-    k_loop_para=list(range(0, datanumber))
+    k_loop_para = list(range(0, datanumber))
     random.shuffle(k_loop_para)
     for k in k_loop_para:  # 樣本迴圈
         firstsum = np.empty((1, hiddenlayer_1))
@@ -97,7 +110,7 @@ for z in range(epochs):
 
         Secondsum = sig(np.dot(weight_2, firstsum.flatten()))
         output = sig(np.dot(weight_output, Secondsum.flatten()))  # 先算出初始output
-        print(output)
+        # print(output)
         theta_output = output_theta(output, y_train_matrix[k])
         theta_hidden2 = hidden_theta(Secondsum, weight_output, theta_output).flatten()
         theta_hidden1 = hidden_theta(firstsum, weight_2, theta_hidden2).flatten()
@@ -115,21 +128,25 @@ for z in range(epochs):
         weight_1 = weight_1 + delta_w_matrix_inputto_1
         weight_2 = weight_2 + delta_w_matrix_1to_2
 
+    correct = 0
+    pred = np.zeros((testnumber, 1))
+    for i in range(0, testnumber):
+
+        expect_output = output_generator(
+            weight_1, weight_2, weight_output, x_test[i, :].flatten()
+        )
+        # result_matrix[i, ::] = expect_output
+        pred[i] = np.argmax(expect_output)
+        if pred[i] == y_test[i]:
+            correct += 1
+    correct_matrix[z] = correct
+
+print("modol training done")
 #%% expect
-testnumber = 10000
+
 result_matrix = np.empty((testnumber, 10))
 pred = np.zeros((testnumber, 1))
 MSE = 0
-
-
-def output_generator(weight1, weight2, weightoutput, data):
-    # firstsum1= np.empty((1, hiddenlayer_1))
-    firstsum1 = sig(np.dot(weight1, data))
-    # print(firstsum1)
-    Secondsum1 = sig(np.dot(weight2, firstsum1.flatten()))
-    output1 = sig(np.dot(weightoutput, Secondsum1.flatten()))
-    # print(output1)# 先算出初始output
-    return output1
 
 
 correct = 0
