@@ -1,4 +1,5 @@
 #%%
+import imp
 from random import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -165,4 +166,10 @@ from sklearn.metrics import mean_squared_error
 MSE = mean_squared_error(y_test[range(0, testnumber)], pred.transpose().flatten())
 print(correct)
 print(MSE)
-#%% gradient descent
+#%% import data search
+import os
+from os import listdir
+from os.path import isfile,join
+
+import cv2
+# %%
