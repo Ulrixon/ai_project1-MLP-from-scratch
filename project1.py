@@ -166,10 +166,84 @@ from sklearn.metrics import mean_squared_error
 MSE = mean_squared_error(y_test[range(0, testnumber)], pred.transpose().flatten())
 print(correct)
 print(MSE)
+
+
 #%% import data search
 import os
 from os import listdir
-from os.path import isfile,join
+from os.path import isfile, join
 
 import cv2
-# %%
+
+label_folder = []
+total_size = 0
+data_path = ""
+
+for root, dirts, files in os.walk(data_path):
+    for dirt in dirts:
+        label_folder.append(dirt)
+        total_size += len(files)
+
+print("found", total_size, "files.")
+print("folder:", label_folder)
+# %% load img train
+import numpy as np
+
+base_x_train = []
+base_y_train = []
+
+for i in range(len(label_folder)):
+    labelPath = data_path + r"\\" + label_folder[i]
+
+    FileName = [f for f in listdir(labelPath) if isfile(join(labelPath, f))]
+
+    for j in range(len(FileName)):
+        path = labelPath + r"\\" + FileName[j]
+
+        img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+
+        base_x_train.append(img)
+        base_y_train.append(label_folder[i])
+
+x_train = base_x_train
+y_train = base_y_train
+# when you load already, u should turn back to train model then go down
+#%% load img test
+total_size = 0
+data_path = ""
+
+base_x_test = []
+
+labelPath = data_path + r"\\"
+
+FileName_test = [f for f in listdir(labelPath) if isfile(join(labelPath, f))]
+
+for j in range(len(FileName_test)):
+    path = labelPath + r"\\" + FileName_test[j]
+
+    img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+
+    base_x_test.append(img)
+
+testnumber = len(base_x_test)
+pred = np.zeros((testnumber, 1))
+
+
+# predict
+correct = 0
+for i in range(0, testnumber):
+
+    expect_output = output_generator(
+        weight_1, weight_2, weight_output, x_test[i, :].flatten()
+    )
+
+    pred[i] = np.argmax(expect_output)
+    if pred[i] == y_test[i]:
+        correct += 1
+
+FileName_test.removesuffix(".img")
+# export txt file
+path_to_file = "/Users/ryan/Downloads/"
+with open(path_to_file + "410873001.txt", "w") as g:
+    for t in range(testnumber):
+        g.write(FileName_test[t] + " " + pred[t] + "\n")
