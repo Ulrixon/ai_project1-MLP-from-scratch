@@ -42,7 +42,7 @@ import random
 
 # learning rate
 lrate = 0.01
-epochs = 2
+epochs = 5
 inputlayer = 28 * 28
 hiddenlayer_1 = 150
 hiddenlayer_2 = 100
