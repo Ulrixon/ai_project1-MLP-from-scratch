@@ -48,8 +48,8 @@ inputlayer = 28 * 28
 hiddenlayer_1 = 150
 hiddenlayer_2 = 100
 outputlayer = 10
-datanumber = 60000
-testnumber = 10000
+datanumber = len(x_train)
+testnumber = len(x_test)
 # weight_1=np.empty((hiddenlayer_1,784))
 
 
@@ -205,8 +205,12 @@ for i in range(len(label_folder)):
         base_x_train.append(img)
         base_y_train.append(label_folder[i])
 
-x_train = base_x_train
-y_train = base_y_train
+from sklearn.cross_validation import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(
+    base_x_train, base_y_train, test_size=0.1
+)
+
 # when you load already, u should turn back to train model then go down
 #%% load img test
 total_size = 0
@@ -225,6 +229,7 @@ for j in range(len(FileName_test)):
 
     base_x_test.append(img)
 
+x_test = base_x_test
 testnumber = len(base_x_test)
 pred = np.zeros((testnumber, 1))
 
