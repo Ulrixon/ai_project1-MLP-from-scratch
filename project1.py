@@ -22,13 +22,12 @@ for i in range(0, len(y_test) - 1):
 
 #%% example
 
-trainimg = x_train
-trainlabel = y_train
+
 nsample = 1
 
 
 for i in [0, 1, 2]:
-    plt.imshow(np.reshape(trainimg[i, :] / 255, (28, 28)), interpolation="nearest")
+    plt.imshow(np.reshape(x_train[i, :] / 255, (28, 28)), interpolation="nearest")
     print(y_train[i])
     plt.show()
 
@@ -45,9 +44,9 @@ import random
 lrate = 0.01
 epochs = 5
 inputlayer = 28 * 28
-hiddenlayer_1 = 150
-hiddenlayer_2 = 100
-outputlayer = 10
+hiddenlayer_1 = 100
+hiddenlayer_2 = 50
+outputlayer = 5
 datanumber = len(x_train)
 testnumber = len(x_test)
 # weight_1=np.empty((hiddenlayer_1,784))
@@ -138,14 +137,14 @@ for z in range(epochs):
         )
         # result_matrix[i, ::] = expect_output
         pred[i] = np.argmax(expect_output)
-        if pred[i] == y_test[i]:
+        if pred[i] == np.argmax(y_test_matrix[i]):
             correct += 1
     correct_matrix[z] = correct
 
 print("modol training done")
 #%% expect
 
-result_matrix = np.empty((testnumber, 10))
+result_matrix = np.empty((testnumber, outputlayer))
 pred = np.zeros((testnumber, 1))
 MSE = 0
 
@@ -156,18 +155,22 @@ for i in range(0, testnumber):
     expect_output = output_generator(
         weight_1, weight_2, weight_output, x_test[i, :].flatten()
     )
-    result_matrix[i, ::] = expect_output
+    #result_matrix[i, ::] = expect_output
     pred[i] = np.argmax(expect_output)
-    if pred[i] == y_test[i]:
+    if pred[i] == np.argmax(y_test_matrix[i]):
         correct += 1
     # print(expect_output)
 from sklearn.metrics import mean_squared_error
 
-MSE = mean_squared_error(y_test[range(0, testnumber)], pred.transpose().flatten())
+#MSE = mean_squared_error(y_test[range(0, testnumber)], pred.transpose().flatten())
 print(correct)
-print(MSE)
+#print(MSE)
 
-
+#%% store data
+storedata=[weight_1,weight_2,weight_output]
+weight_1=storedata[1]
+weight_2=storedata[2]
+weight_output=storedata[3]
 #%% import data search
 import os
 from os import listdir
@@ -177,12 +180,12 @@ import cv2
 
 label_folder = []
 total_size = 0
-data_path = ""
+data_path = "/Users/ryan/Downloads/Training data"
 
 for root, dirts, files in os.walk(data_path):
     for dirt in dirts:
         label_folder.append(dirt)
-        total_size += len(files)
+        total_size = total_size+  len(files)
 
 print("found", total_size, "files.")
 print("folder:", label_folder)
@@ -193,43 +196,71 @@ base_x_train = []
 base_y_train = []
 
 for i in range(len(label_folder)):
-    labelPath = data_path + r"\\" + label_folder[i]
+    labelPath = data_path + r"/" + label_folder[i]
 
     FileName = [f for f in listdir(labelPath) if isfile(join(labelPath, f))]
 
     for j in range(len(FileName)):
-        path = labelPath + r"\\" + FileName[j]
+        path = labelPath + r"/" + FileName[j]
 
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
 
         base_x_train.append(img)
         base_y_train.append(label_folder[i])
 
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 
 x_train, x_test, y_train, y_test = train_test_split(
-    base_x_train, base_y_train, test_size=0.1
+    np.array(base_x_train), np.array(base_y_train), test_size=0.1
 )
+y_train = [int(numeric_string) for numeric_string in y_train]
+
+y_test=[int(numeric_string) for numeric_string in y_test]
+y_train_matrix = np.zeros((len(y_train), 5))
+for i in range(0, len(y_train)):
+    if y_train[i]==int(label_folder[0]):
+        y_train_matrix[i, 0] = 1
+    elif y_train[i]==int(label_folder[1]):
+        y_train_matrix[i, 1] = 1
+    elif y_train[i]==int(label_folder[2]): 
+        y_train_matrix[i, 2] = 1
+    elif y_train[i]==int(label_folder[3]):
+        y_train_matrix[i, 3] = 1
+    elif y_train[i]==int(label_folder[4]):
+        y_train_matrix[i, 4] = 1
+    
+y_test_matrix = np.zeros((len(y_test), 5))
+for i in range(0, len(y_test) ):
+    if y_test[i]==int(label_folder[0]):
+        y_test_matrix[i, 0] = 1
+    elif y_test[i]==int(label_folder[1]):
+        y_test_matrix[i, 1] = 1
+    elif y_test[i]==int(label_folder[2]): 
+        y_test_matrix[i, 2] = 1
+    elif y_test[i]==int(label_folder[3]):
+        y_test_matrix[i, 3] = 1
+    elif y_test[i]==int(label_folder[4]):
+        y_test_matrix[i, 4] = 1
 
 # when you load already, u should turn back to train model then go down
 #%% load img test
 total_size = 0
-data_path = ""
+data_path = "/Users/ryan/Downloads/Testing data"
 
 base_x_test = []
 
-labelPath = data_path + r"\\"
+labelPath = data_path + r"/"
 
 FileName_test = [f for f in listdir(labelPath) if isfile(join(labelPath, f))]
 
 for j in range(len(FileName_test)):
-    path = labelPath + r"\\" + FileName_test[j]
+    path = labelPath + r"/" + FileName_test[j]
 
     img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
 
     base_x_test.append(img)
 
-x_test = base_x_test
+base_x_test = np.array(base_x_test)
 testnumber = len(base_x_test)
 pred = np.zeros((testnumber, 1))
 
@@ -239,16 +270,39 @@ correct = 0
 for i in range(0, testnumber):
 
     expect_output = output_generator(
-        weight_1, weight_2, weight_output, x_test[i, :].flatten()
+        weight_1, weight_2, weight_output, base_x_test[i, :].flatten()
     )
 
     pred[i] = np.argmax(expect_output)
-    if pred[i] == y_test[i]:
-        correct += 1
+    
+pred_true=np.zeros(len(pred))
+for z in range(0,len(pred)):
+    if pred[z]==0:
+        pred_true[z] = label_folder[0]
+    elif pred[z]==1:
+        pred_true[z] = label_folder[1]
+    elif pred[z]==2: 
+        pred_true[z] = label_folder[2]
+    elif pred[z]==3:
+        pred_true[z] = label_folder[3]
+    elif pred[z]==4:
+        pred_true[z] = label_folder[4]
 
-FileName_test.removesuffix(".img")
+for j in range(0,len(FileName_test)):
+    FileName_test[j]=FileName_test[j].removesuffix(".png")
+    
+txtcsv= np.empty((len(pred_true),2))
+for i in range(len(pred_true)):
+    txtcsv[i,0]=FileName_test[i]
+    txtcsv[i,1]=pred_true[i]
+
 # export txt file
 path_to_file = "/Users/ryan/Downloads/"
 with open(path_to_file + "410873001.txt", "w") as g:
-    for t in range(testnumber):
-        g.write(FileName_test[t] + " " + pred[t] + "\n")
+    for t in range(1,testnumber+1):
+        for j in range(testnumber):
+            if int(FileName_test[j])==t:
+            
+                g.write(FileName_test[j] + " " + str(int(pred_true[j])) + "\n")
+
+# %%
