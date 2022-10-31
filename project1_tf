@@ -52,3 +52,19 @@ for i in range(0, len(x_test)):
     if np.argmax(pred[i]) == y_test[i]:
         correct += 1
 # %%
+node100_50=np.array([[8175], [8714], [8924] ,[9059] ,[9131]])
+node100_50_acc=(node100_50)/10000
+node150_100=np.array([[8456] ,[8894] ,[9076] ,[9171] ,[9214]])
+node150_100_acc=(node150_100)/10000
+
+x=list(range(1,6))
+
+plt.plot(x,node100_50_acc,label="100-50")
+plt.plot(x,node150_100_acc,label="150-100")
+plt.legend(loc="upper left")
+plt.xticks(range(1,6))
+plt.title('Learning Curve',fontsize="18")
+plt.xlabel('epochs', fontsize="10") # 設定 x 軸標題內容及大小
+plt.ylabel('accuracy', fontsize="10")
+plt.show()
+# %%
