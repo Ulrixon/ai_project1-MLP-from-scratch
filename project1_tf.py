@@ -29,6 +29,7 @@ model = tf.keras.models.Sequential([
   tf.keras.layers.Dense(100, activation='sigmoid'),
   #tf.keras.layers.Dropout(0.2),
   tf.keras.layers.Dense(50, activation='sigmoid'),
+  #tf.keras.layers.Dropout(0.2),
   tf.keras.layers.Dense(10, activation='sigmoid')
 ])
 
@@ -38,7 +39,17 @@ model.compile(optimizer=sgd,
               loss=loss_fn,
               metrics=['accuracy'])
 
-model.fit(x_train,y_train_matrix,epochs=5,verbose=1, batch_size=10)
+model.fit(x_train,y_train_matrix,validation_data = (x_test, y_test_matrix),epochs=50,verbose=1, batch_size=10)
+
+#%%
+plt.plot(model.history.history['accuracy'])
+plt.plot(model.history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
 
 
 #%%
