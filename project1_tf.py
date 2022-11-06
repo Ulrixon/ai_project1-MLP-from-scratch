@@ -39,7 +39,7 @@ model.compile(optimizer=sgd,
               loss=loss_fn,
               metrics=['accuracy'])
 
-model.fit(x_train,y_train_matrix,validation_data = (x_test, y_test_matrix),epochs=50,verbose=1, batch_size=10)
+model.fit(x_train,y_train_matrix,validation_data = (x_test, y_test_matrix),epochs=50,verbose=1, batch_size=10,)
 
 #%%
 plt.plot(model.history.history['accuracy'])
